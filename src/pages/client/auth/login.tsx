@@ -1,3 +1,4 @@
+import { useCurrentApp } from '@/components/context/app.context';
 import { loginAPI } from '@/services/api';
 import { Button, Divider, Form, Input, App } from 'antd';
 import { Card } from 'antd';
@@ -12,10 +13,14 @@ const LoginPage = () => {
     const [isSubmit, setIsSubmit] = useState(false);
     const { message, notification } = App.useApp();
     const navigate = useNavigate();
+    const { setIsAuthenticated, setUser } = useCurrentApp();
     const onFinish: FormProps['onFinish'] = async (values: FieldType) => {
         setIsSubmit(true);
         const res = await loginAPI(values.username, values.password);
         if (res.data) {
+            // Assuming res.data contains the login response
+            setIsAuthenticated!(true);
+            setUser(res.data.user);
             message.success('Login successful!');
             navigate("/");
             // redirect to dashboard or home page
