@@ -28,4 +28,15 @@ interface IBackendRes<T> {
             id: string;
         }
     }
+    interface IRegisterRequest {
+        fullName: string;
+        email: string;
+        password: string;
+        phone: string;
+    }
+    interface IRegister {
+        _id:string;
+        email: string;
+        fullName: string;
+    }
    }

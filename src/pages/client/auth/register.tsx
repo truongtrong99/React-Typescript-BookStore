@@ -1,7 +1,9 @@
+import { registerAPI } from '@/services/api';
 import type { FormProps } from 'antd';
-import { Button, Divider, Form, Input } from 'antd';
+import { Button, Divider, Form, Input, App } from 'antd';
 import { Card } from 'antd';
 import { useState } from 'react';
+import { useNavigate } from "react-router";
 type FieldType = {
     fullName?: string;
     email?: string;
@@ -11,9 +13,26 @@ type FieldType = {
 
 const RegisterPage = () => {
     const [isSubmit, setIsSubmit] = useState(false);
+    const { message } = App.useApp();
+    const navigate = useNavigate();
+    const onFinish: FormProps['onFinish'] = async (values: FieldType) => {
+        setIsSubmit(true);
+        const res = await registerAPI({
+            fullName: values.fullName!,
+            email: values.email!,
+            password: values.password!,
+            phone: values.phone!
+        });
 
-    const onFinish: FormProps['onFinish'] = async (values) => {
-        console.log('Received values:', values);
+        if (res.data) {
+            message.success('Registration successful!');
+            navigate("/login");
+            // redirect to login page or home page
+        }
+        if (res.error) {
+            message.error(res.message);
+        }
+        setIsSubmit(false);
     };
 
 
