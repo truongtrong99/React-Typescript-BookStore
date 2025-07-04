@@ -11,13 +11,11 @@ type FieldType = {
 
 const RegisterPage = () => {
     const [isSubmit, setIsSubmit] = useState(false);
-    const onFinish: FormProps['onFinish'] = (values) => {
+
+    const onFinish: FormProps['onFinish'] = async (values) => {
         console.log('Received values:', values);
     };
 
-    const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
-        console.log('Failed:', errorInfo);
-    };
 
     return (
         <>
@@ -37,7 +35,6 @@ const RegisterPage = () => {
                     style={{ maxWidth: 600 }}
                     layout="vertical"
                     onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
                     autoComplete="off"
                 >
                     <Form.Item
