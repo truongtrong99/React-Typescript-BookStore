@@ -9,3 +9,12 @@ export const registerAPI = (data: IRegisterRequest) => {
     const urlBackend = '/api/v1/user/register';
     return axios.post<IBackendRes<IRegister>>(urlBackend, data);
 }
+
+export const fetchAccountAPI = () => {
+    const urlBackend = '/api/v1/auth/account';
+    return axios.get<IBackendRes<IFetchAccount>>(urlBackend, {
+        headers:{
+            delay: 3000,
+        }
+    });
+}
