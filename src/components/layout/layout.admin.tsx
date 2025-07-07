@@ -94,7 +94,7 @@ const LayoutAdmin = () => {
 
     ];
 
-    const urlAvatar = `${import.meta.env.VITE_BACKEND_URL}/images/avatar/${user?.avatar}`;
+    const urlAvatar = `${import.meta.env.VITE_API_URL}/images/avatar/${user?.avatar}`;
     if (isAuthenticated === false) {
         return (
             <Outlet />

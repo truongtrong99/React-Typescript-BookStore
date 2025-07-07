@@ -55,8 +55,7 @@ const AppHeader = (props: any) => {
         })
     }
 
-    const urlAvatar = `${import.meta.env.VITE_BACKEND_URL}/images/avatar/${user?.avatar}`;
-
+    const urlAvatar = `${import.meta.env.VITE_API_URL}/images/avatar/${user?.avatar}`;
     const contentPopover = () => {
         return (
             <div className='pop-cart-body'>
