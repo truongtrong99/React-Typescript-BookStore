@@ -11,7 +11,6 @@ function Layout() {
     // Fetch user account information
     const fetchUserAccount = async () => {
       const res = await fetchAccountAPI()
-      console.log('User account fetched:', res)
       if (res.data) {
         setUser(res.data.user)
         setIsAuthenticated(true)

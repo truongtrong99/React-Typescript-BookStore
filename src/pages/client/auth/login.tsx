@@ -19,8 +19,9 @@ const LoginPage = () => {
         const res = await loginAPI(values.username, values.password);
         if (res.data) {
             // Assuming res.data contains the login response
-            setIsAuthenticated!(true);
+            setIsAuthenticated(true);
             setUser(res.data.user);
+            localStorage.setItem('access_token', res.data.access_token);
             message.success('Login successful!');
             navigate("/");
             // redirect to dashboard or home page
