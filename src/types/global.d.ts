@@ -15,7 +15,7 @@ interface IBackendRes<T> {
             pages: number;
             total: number;
         },
-        results: T[]
+        result: T[]
     }
     interface ILogin {
         access_token: string;
@@ -50,5 +50,17 @@ interface IBackendRes<T> {
 
     interface IFetchAccount {
        user: IUser;
+    }
+    interface IUserTable {
+        _id: string;
+        fullName: string;
+        email: string;
+        phone: string;
+        role: string;
+        avatar: string;
+        isActive: boolean;
+        type: string;
+        createdAt: Date;
+        updatedAt: Date;
     }
 }
