@@ -1,9 +1,9 @@
 import { getUsersAPI } from '@/services/api';
-import { PlusOutlined } from '@ant-design/icons';
+import { DeleteTwoTone, EditTwoTone, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable, TableDropdown } from '@ant-design/pro-components';
 import { Button, Space, Tag } from 'antd';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 
 const columns: ProColumns<IUserTable>[] = [
@@ -15,6 +15,14 @@ const columns: ProColumns<IUserTable>[] = [
     {
         title: '_id',
         dataIndex: '_id',
+        hideInSearch: true,
+        render(dom, entity) {
+            return (
+                <div>
+                    <a href='#'>{entity._id}</a>
+                </div>
+            )
+        },
     },
     {
         title: 'Full Name',
@@ -23,30 +31,40 @@ const columns: ProColumns<IUserTable>[] = [
     {
         title: 'Email',
         dataIndex: 'email',
+        copyable: true,
     },
     {
         title: 'Created At',
         dataIndex: 'createdAt',
     },
     {
-        title: '_id',
-        dataIndex: 'title',
+        title: 'Action',
         copyable: true,
         ellipsis: true,
-        tooltip: '标题过长会自动收缩',
-        formItemProps: {
-            rules: [
-                {
-                    required: true,
-                    message: '此项为必填项',
-                },
-            ],
+        hideInSearch: true,
+        render(dom, entity) {
+            return (
+                <>
+                    <EditTwoTone
+                        twoToneColor="#f57800"
+                        style={{ cursor: 'pointer', marginRight: 15 }} />
+                    <DeleteTwoTone
+                        twoToneColor="#f57800"
+                        style={{ cursor: 'pointer' }} />
+                </>
+            )
         },
     },
 ];
 
 const TableUser = () => {
     const actionRef = useRef<ActionType>();
+    const [meta, setMeta] = useState({
+        current: 1,
+        pageSize: 5,
+        pages: 0,
+        total: 0,
+    });
     return (
         <>
             <ProTable<IUserTable>
@@ -56,22 +74,45 @@ const TableUser = () => {
                 request={async (params, sort, filter) => {
                     console.log(sort, filter);
                     const res = await getUsersAPI();
-                    // const data = await (await fetch('https://proapi.azurewebsites.net/github/issues')).json()
+                    if (res.data) {
+                        setMeta({
+                            current: res.data?.meta.current,
+                            pageSize: res.data?.meta.pageSize,
+                            pages: res.data?.meta.pages,
+                            total: res.data?.meta.total,
+                        });
+                    }
                     return {
                         data: res.data?.result,
-                        "page": 1,
-                        "success": true,
-                        "total": res.data?.meta.total,
+                        page: 1,
+                        success: true,
+                        total: res.data?.meta.total,
                     }
 
                 }}
-                rowKey="id"
+                rowKey="_id"
                 pagination={{
-                    pageSize: 5,
+                    current: meta.current,
+                    pageSize: meta.pageSize,
+                    total: meta.total,
+                    showTotal: (total, range) => {
+                        return (
+                            <div>
+                                {range[0]}-{range[1]} of {total} items
+                            </div>
+                        )
+                    },
                     onChange: (page) => console.log(page),
+                    showSizeChanger: true,
                 }}
                 dateFormatter="string"
                 headerTitle="Table user"
+                toolBarRender={() => [
+                    <Button type="primary" icon={<PlusOutlined />} onClick={() => { }}>
+                        New User
+                    </Button>
+
+                ]}
             />
         </>
     );
