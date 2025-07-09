@@ -1,12 +1,13 @@
 import { getUsersAPI } from '@/services/api';
 import { dateRangeValidate } from '@/services/helper';
-import { DeleteTwoTone, EditTwoTone, PlusOutlined } from '@ant-design/icons';
+import { CloudUploadOutlined, DeleteTwoTone, EditTwoTone, ExportOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
 import { Button } from 'antd';
 import { useRef, useState } from 'react';
 import DetailUser from './detail.user';
 import CreateUser from './create.user';
+import ImportUser from './data/import.user';
 
 
 type TSearch = {
@@ -86,7 +87,7 @@ const TableUser = () => {
     const [isOpenDetail, setIsOpenDetail] = useState<boolean>(false);
     const [userDetail, setUserDetail] = useState<IUserTable | null>(null);
     const [isOpenCreate, setIsOpenCreate] = useState<boolean>(false);
-
+    const [isOpenModalImport, setIsOpenModalImport] = useState<boolean>(false);
     const showUserDetail = (record: IUserTable) => {
         setUserDetail(record);
         setIsOpenDetail(true);
@@ -104,7 +105,7 @@ const TableUser = () => {
                 actionRef={actionRef}
                 cardBordered
                 request={async (params, sort, filter) => {
-                    console.log(params, sort, filter);
+                    // console.log(params, sort, filter);
                     let query = '';
                     if (params) {
                         query += `current=${params.current ?? 1}&pageSize=${params.pageSize ?? 5}`;
@@ -155,15 +156,23 @@ const TableUser = () => {
                             </div>
                         )
                     },
-                    onChange: (page) => console.log(page),
+                    // onChange: (page) => console.log(page),
                     showSizeChanger: true,
                 }}
                 dateFormatter="string"
                 headerTitle="Table user"
                 toolBarRender={() => [
-                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsOpenCreate(true)}>
-                        New User
-                    </Button>
+                    <>
+                        <Button type="primary" icon={<ExportOutlined />} onClick={() => { }}>
+                            Export
+                        </Button>
+                        <Button type="primary" icon={<CloudUploadOutlined />} onClick={() => setIsOpenModalImport(true)}>
+                            Upload File
+                        </Button>
+                        <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsOpenCreate(true)}>
+                            New User
+                        </Button>
+                    </>
 
                 ]}
             />
@@ -177,6 +186,10 @@ const TableUser = () => {
                 isOpenCreate={isOpenCreate}
                 setIsOpenCreate={setIsOpenCreate}
                 refreshTable={refreshTable}
+            />
+            <ImportUser
+                isOpenModalImport={isOpenModalImport}
+                setIsOpenModalImport={setIsOpenModalImport}
             />
         </>
     );

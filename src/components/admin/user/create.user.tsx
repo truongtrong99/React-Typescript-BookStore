@@ -1,9 +1,7 @@
 import { createUserAPI } from '@/services/api';
-import { ActionType } from '@ant-design/pro-components';
-import { App, Button, Modal, notification } from 'antd';
-import { Divider, Form, Input } from 'antd';
+import { App, Modal } from 'antd';
+import { Form, Input } from 'antd';
 import type { FormProps } from 'antd';
-import { useState } from 'react';
 
 
 interface IProps {
