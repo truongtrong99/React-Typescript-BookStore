@@ -38,13 +38,13 @@ const columns: ProColumns<IUserTable>[] = [
         title: 'Created At',
         dataIndex: 'createdAtRange',
         valueType: 'dateRange',
-        sorter: true,
         hideInTable: true,
     },
     {
         title: 'Created At',
         dataIndex: 'createdAt',
         valueType: 'date',
+        sorter: true,
         hideInSearch: true,
     },
     {
@@ -100,6 +100,11 @@ const TableUser = () => {
                         const createdAtRange = dateRangeValidate(params.createdAtRange);
                         if (createdAtRange) {
                             query += `&createdAt>=${createdAtRange[0]}&createdAt<=${createdAtRange[1]}`;
+                        }
+                    }
+                    if (sort) {
+                        if (sort.createdAt) {
+                            query += `&sort=${sort.createdAt == 'ascend' ? 'createdAt' : '-createdAt'}`;
                         }
                     }
                     const res = await getUsersAPI(query);
