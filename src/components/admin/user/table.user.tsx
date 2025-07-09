@@ -6,6 +6,7 @@ import { ProTable } from '@ant-design/pro-components';
 import { Button } from 'antd';
 import { useRef, useState } from 'react';
 import DetailUser from './detail.user';
+import CreateUser from './create.user';
 
 
 type TSearch = {
@@ -84,12 +85,16 @@ const TableUser = () => {
     });
     const [isOpenDetail, setIsOpenDetail] = useState<boolean>(false);
     const [userDetail, setUserDetail] = useState<IUserTable | null>(null);
+    const [isOpenCreate, setIsOpenCreate] = useState<boolean>(false);
 
     const showUserDetail = (record: IUserTable) => {
         setUserDetail(record);
         setIsOpenDetail(true);
     };
 
+    const refreshTable = () => {
+        actionRef.current?.reload();
+    }
 
 
     return (
@@ -114,6 +119,8 @@ const TableUser = () => {
                             query += `&createdAt>=${createdAtRange[0]}&createdAt<=${createdAtRange[1]}`;
                         }
                     }
+                    //default sort by createdAt
+                    query += `&sort=-createdAt`;
                     if (sort) {
                         if (sort.createdAt) {
                             query += `&sort=${sort.createdAt == 'ascend' ? 'createdAt' : '-createdAt'}`;
@@ -154,7 +161,7 @@ const TableUser = () => {
                 dateFormatter="string"
                 headerTitle="Table user"
                 toolBarRender={() => [
-                    <Button type="primary" icon={<PlusOutlined />} onClick={() => { }}>
+                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsOpenCreate(true)}>
                         New User
                     </Button>
 
@@ -165,6 +172,11 @@ const TableUser = () => {
                 setIsOpenDetail={setIsOpenDetail}
                 userDetail={userDetail}
                 setUserDetail={setUserDetail}
+            />
+            <CreateUser
+                isOpenCreate={isOpenCreate}
+                setIsOpenCreate={setIsOpenCreate}
+                refreshTable={refreshTable}
             />
         </>
     );
