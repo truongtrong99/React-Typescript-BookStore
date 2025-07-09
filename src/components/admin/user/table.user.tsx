@@ -1,4 +1,5 @@
 import { getUsersAPI } from '@/services/api';
+import { dateRangeValidate } from '@/services/helper';
 import { DeleteTwoTone, EditTwoTone, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable, TableDropdown } from '@ant-design/pro-components';
@@ -35,7 +36,16 @@ const columns: ProColumns<IUserTable>[] = [
     },
     {
         title: 'Created At',
+        dataIndex: 'createdAtRange',
+        valueType: 'dateRange',
+        sorter: true,
+        hideInTable: true,
+    },
+    {
+        title: 'Created At',
         dataIndex: 'createdAt',
+        valueType: 'date',
+        hideInSearch: true,
     },
     {
         title: 'Action',
@@ -56,7 +66,12 @@ const columns: ProColumns<IUserTable>[] = [
         },
     },
 ];
-
+type TSearch = {
+    fullName: string;
+    email: string;
+    createdAt: string;
+    createdAtRange: string;
+}
 const TableUser = () => {
     const actionRef = useRef<ActionType>();
     const [meta, setMeta] = useState({
@@ -67,13 +82,27 @@ const TableUser = () => {
     });
     return (
         <>
-            <ProTable<IUserTable>
+            <ProTable<IUserTable, TSearch>
                 columns={columns}
                 actionRef={actionRef}
                 cardBordered
                 request={async (params, sort, filter) => {
-                    console.log(sort, filter);
-                    const res = await getUsersAPI(params?.current ?? 1, params?.pageSize ?? 5);
+                    console.log(params, sort, filter);
+                    let query = '';
+                    if (params) {
+                        query += `current=${params.current ?? 1}&pageSize=${params.pageSize ?? 5}`;
+                        if (params.fullName) {
+                            query += `&fullName=/${params.fullName}/i`;
+                        }
+                        if (params.email) {
+                            query += `&email=/${params.email}/i`;
+                        }
+                        const createdAtRange = dateRangeValidate(params.createdAtRange);
+                        if (createdAtRange) {
+                            query += `&createdAt>=${createdAtRange[0]}&createdAt<=${createdAtRange[1]}`;
+                        }
+                    }
+                    const res = await getUsersAPI(query);
                     if (res.data) {
                         setMeta({
                             current: res.data?.meta.current,
