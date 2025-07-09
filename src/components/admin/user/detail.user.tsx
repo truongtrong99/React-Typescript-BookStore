@@ -4,7 +4,7 @@ import type { DescriptionsProps } from 'antd';
 import dayjs from 'dayjs';
 import { Drawer } from "antd";
 import { Descriptions } from "antd";
-
+import { Avatar } from 'antd';
 interface IProps {
     isOpenDetail: boolean;
     setIsOpenDetail: (isOpen: boolean) => void;
@@ -13,6 +13,7 @@ interface IProps {
 }
 const DetailUser = (props: IProps) => {
     const { isOpenDetail, setIsOpenDetail, userDetail, setUserDetail } = props;
+    const avatarUrl = userDetail ? `${import.meta.env.VITE_API_URL}/images/avatar/${userDetail.avatar}` : '';
     const items: DescriptionsProps['items'] = [
         {
             key: '1',
@@ -42,7 +43,13 @@ const DetailUser = (props: IProps) => {
             key: '5',
             label: 'Role',
             children: <Badge status="processing" text={userDetail ? userDetail.role : 'N/A'} />,
-            span: 3,
+            span: 2,
+        },
+        {
+            key: '5',
+            label: 'Avatar',
+            children: <Avatar size={40} src={avatarUrl}></Avatar>,
+            span: 2
         },
         {
             key: '6',
