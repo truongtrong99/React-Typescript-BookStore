@@ -8,6 +8,7 @@ import { useState } from 'react';
 import Exceljs from 'exceljs';
 import { Buffer } from 'buffer';
 import { createListUsersAPI } from '@/services/api';
+import templateFile from '@/assets/template/user.xlsx?url';
 interface IProps {
     isOpenModalImport: boolean;
     setIsOpenModalImport: (isOpen: boolean) => void;
@@ -133,6 +134,11 @@ const ImportUser = (props: IProps) => {
                 <p className="ant-upload-hint">
                     Support for a single or bulk upload. Strictly prohibited from uploading company data or other
                     banned files.
+                    &nbsp; <a
+                        onClick={e => e.stopPropagation()}
+                        href={templateFile} download>
+                        Download Sample File
+                    </a>
                 </p>
             </Dragger>
             <div style={{ paddingTop: 20 }}>
