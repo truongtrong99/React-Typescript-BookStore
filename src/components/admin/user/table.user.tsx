@@ -8,7 +8,7 @@ import { useRef, useState } from 'react';
 import DetailUser from './detail.user';
 import CreateUser from './create.user';
 import ImportUser from './data/import.user';
-
+import { CSVLink } from 'react-csv';
 
 type TSearch = {
     fullName: string;
@@ -88,6 +88,8 @@ const TableUser = () => {
     const [userDetail, setUserDetail] = useState<IUserTable | null>(null);
     const [isOpenCreate, setIsOpenCreate] = useState<boolean>(false);
     const [isOpenModalImport, setIsOpenModalImport] = useState<boolean>(false);
+    const [currentDataTable, setCurrentDataTable] = useState<IUserTable[]>([]);
+
     const showUserDetail = (record: IUserTable) => {
         setUserDetail(record);
         setIsOpenDetail(true);
@@ -134,6 +136,7 @@ const TableUser = () => {
                             pages: res.data?.meta.pages,
                             total: res.data?.meta.total,
                         });
+                        setCurrentDataTable(res.data?.result ?? []);
                     }
                     return {
                         data: res.data?.result,
@@ -163,7 +166,12 @@ const TableUser = () => {
                 toolBarRender={() => [
                     <>
                         <Button type="primary" icon={<ExportOutlined />} onClick={() => { }}>
-                            Export
+                            <CSVLink
+                                data={currentDataTable}
+                                filename="export-users.csv"
+                            >
+                                Export
+                            </CSVLink>
                         </Button>
                         <Button type="primary" icon={<CloudUploadOutlined />} onClick={() => setIsOpenModalImport(true)}>
                             Upload File
