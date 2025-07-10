@@ -1,9 +1,9 @@
-import { getUsersAPI } from '@/services/api';
+import { deleteUserAPI, getUsersAPI } from '@/services/api';
 import { dateRangeValidate } from '@/services/helper';
 import { CloudUploadOutlined, DeleteTwoTone, EditTwoTone, ExportOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { Button } from 'antd';
+import { App, Button, Popconfirm } from 'antd';
 import { useRef, useState } from 'react';
 import DetailUser from './detail.user';
 import CreateUser from './create.user';
@@ -74,10 +74,18 @@ const TableUser = () => {
                                 setIsOpenModalUpdate(true);
                             }}
                         />
+                        <Popconfirm
+                            title="Delete the user"
+                            description="Are you sure to delete this user?"
+                            onConfirm={() => handleDelete(entity._id)}
+                            okText="Yes"
+                            cancelText="No"
+                        >
+                            <DeleteTwoTone
+                                twoToneColor="#f57800"
+                                style={{ cursor: 'pointer' }} />
+                        </Popconfirm>
 
-                        <DeleteTwoTone
-                            twoToneColor="#f57800"
-                            style={{ cursor: 'pointer' }} />
                     </>
                 )
             },
@@ -98,7 +106,7 @@ const TableUser = () => {
     const [currentDataTable, setCurrentDataTable] = useState<IUserTable[]>([]);
     const [userEditing, setUserEditing] = useState<IUserTable | null>(null);
     const [isOpenModalUpdate, setIsOpenModalUpdate] = useState<boolean>(false);
-
+    const { message } = App.useApp();
     const showUserDetail = (record: IUserTable) => {
         setUserDetail(record);
         setIsOpenDetail(true);
@@ -107,7 +115,23 @@ const TableUser = () => {
     const refreshTable = () => {
         actionRef.current?.reload();
     }
-
+    const handleDelete = async (id: string) => {
+        // Call your delete API here
+        // await deleteUserAPI(id);
+        // After deletion, refresh the table
+        const res = await deleteUserAPI(id);
+        if (res.data) {
+            message.success({
+                content: 'Delete user successfully',
+            })
+        } else {
+            // Handle error case
+            message.error({
+                content: res.message,
+            });
+        }
+        refreshTable();
+    }
 
     return (
         <>
@@ -216,6 +240,7 @@ const TableUser = () => {
                 setUserEditing={setUserEditing}
                 refreshTable={refreshTable}
             />
+
         </>
     );
 };
