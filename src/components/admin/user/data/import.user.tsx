@@ -7,26 +7,22 @@ import { Modal } from 'antd';
 import { useState } from 'react';
 import Exceljs from 'exceljs';
 import { Buffer } from 'buffer';
+import { createListUsersAPI } from '@/services/api';
 interface IProps {
     isOpenModalImport: boolean;
     setIsOpenModalImport: (isOpen: boolean) => void;
-}
-
-interface IDataImport {
-    fullName: string;
-    email: string;
-    address: string;
+    refreshTable: () => void;
 }
 
 const { Dragger } = Upload;
 
 
 const ImportUser = (props: IProps) => {
-    const { isOpenModalImport, setIsOpenModalImport } = props;
+    const { isOpenModalImport, setIsOpenModalImport, refreshTable } = props;
 
-    const { message } = App.useApp();
+    const { message, notification } = App.useApp();
     const [dataImport, setDataImport] = useState<IDataImport[]>([]);
-
+    const [isSubmit, setIsSubmit] = useState<boolean>(false);
     const uploadProps: UploadProps = {
         name: 'file',
         multiple: false,
@@ -63,7 +59,12 @@ const ImportUser = (props: IProps) => {
                         })
 
                     });
-
+                    jsonData = jsonData.map((item, index) => {
+                        return {
+                            ...item,
+                            id: index + 1, // Add an id for each item
+                        };
+                    });
                     setDataImport(jsonData);
                 }
             } else if (status === 'error') {
@@ -81,20 +82,45 @@ const ImportUser = (props: IProps) => {
         },
         accept: '.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel'
     };
+    const handleImportData = async () => {
+        setIsSubmit(true);
+        const dataImportWithPassword = dataImport.map((item) => {
+            return {
+                fullName: item.fullName,
+                email: item.email,
+                phone: item.phone,
+                password: import.meta.env.VITE_USER_CREATE_DEFAULT_PASSWORD
+            }
+        })
+        const res = await createListUsersAPI(dataImportWithPassword);
+        if (res.data) {
+            notification.success({
+                message: 'Bulk Create Users',
+                description: (<>
+                    <div>success= {res.data.countSuccess}; error= {res.data.countError}</div>
+                </>),
+            });
+        }
+        setIsSubmit(false);
+        setIsOpenModalImport(false);
+        setDataImport([]); // Clear data after successful import
+        refreshTable();
 
+    }
     return (
         <Modal
             title="Upload File"
             closable={{ 'aria-label': 'Custom Close Button' }}
             open={isOpenModalImport}
-            onOk={() => setIsOpenModalImport(false)}
+            onOk={() => handleImportData()}
             onCancel={() => {
                 setIsOpenModalImport(false);
                 setDataImport([]); // Clear data on modal close
             }}
             okText="Import Data"
             okButtonProps={{
-                disabled: dataImport.length > 0 ? false : true
+                disabled: dataImport.length > 0 ? false : true,
+                loading: isSubmit,
             }}
             maskClosable={false}
             destroyOnClose={true}
@@ -111,6 +137,7 @@ const ImportUser = (props: IProps) => {
             </Dragger>
             <div style={{ paddingTop: 20 }}>
                 <Table
+                    rowKey={"id"}
                     title={() => <span>Preview Data</span>}
                     dataSource={dataImport}
                     columns={[

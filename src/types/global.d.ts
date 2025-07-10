@@ -63,4 +63,15 @@ interface IBackendRes<T> {
         createdAt: Date;
         updatedAt: Date;
     }
+    interface IDataImport {
+        fullName: string;
+        email: string;
+        phone: string;
+        password?: string;
+    }
+    interface IBulkUsersResponse {
+        countSuccess: number;
+        countError: number;
+        detail: string;
+    }
 }

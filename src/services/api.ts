@@ -34,3 +34,8 @@ export const createUserAPI = (data: IRegisterRequest) => {
     const urlBackend = '/api/v1/user';
     return axios.post<IBackendRes<IRegister>>(urlBackend, data);
 }
+
+export const createListUsersAPI = (data: IDataImport[]) => {
+    const urlBackend = '/api/v1/user/bulk-create';
+    return axios.post<IBackendRes<IBulkUsersResponse>>(urlBackend, data);
+}

@@ -190,6 +190,7 @@ const TableUser = () => {
             <ImportUser
                 isOpenModalImport={isOpenModalImport}
                 setIsOpenModalImport={setIsOpenModalImport}
+                refreshTable={refreshTable}
             />
         </>
     );
