@@ -4,8 +4,9 @@ import type { DescriptionsProps } from 'antd';
 import dayjs from 'dayjs';
 import { Drawer } from "antd";
 import { Descriptions } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { GetProp, UploadFile, UploadProps } from 'antd';
+import { v4 as uuidv4 } from 'uuid';
 interface IProps {
     isOpenDetail: boolean;
     setIsOpenDetail: (isOpen: boolean) => void;
@@ -27,7 +28,7 @@ const DetailBook = (props: IProps) => {
             key: '1',
             label: 'ID',
             children: bookDetail ? bookDetail._id : 'N/A',
-            span: 2,
+            span: 1,
         },
         {
             key: '2',
@@ -39,7 +40,7 @@ const DetailBook = (props: IProps) => {
             key: '3',
             label: 'Author',
             children: bookDetail ? bookDetail.author : 'N/A',
-            span: 2,
+            span: 1,
         },
         {
             key: '4',
@@ -57,7 +58,7 @@ const DetailBook = (props: IProps) => {
             key: '6',
             label: 'Created At',
             children: bookDetail ? dayjs(bookDetail.createdAt).format(FORMATE_DATE_VN) : 'N/A',
-            span: 2,
+            span: 1,
         },
         {
             key: '7',
@@ -67,37 +68,27 @@ const DetailBook = (props: IProps) => {
         }
 
     ];
-    const [fileList, setFileList] = useState<UploadFile[]>([
-        {
-            uid: '-1',
-            name: 'image.png',
-            status: 'done',
-            url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        },
-        {
-            uid: '-2',
-            name: 'image.png',
-            status: 'done',
-            url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        },
-        {
-            uid: '-3',
-            name: 'image.png',
-            status: 'done',
-            url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        },
-        {
-            uid: '-4',
-            name: 'image.png',
-            status: 'done',
-            url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        },
-    ]);
+    const [fileList, setFileList] = useState<UploadFile[]>([]);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
+
+    useEffect(() => {
+        if (bookDetail) {
+            const images = [bookDetail.thumbnail, ...bookDetail.slider];
+            setFileList(images.map((image) => ({
+                uid: uuidv4(),
+                name: image,
+                status: 'done',
+                url: `${import.meta.env.VITE_API_URL}/images/book/${image}`,
+            })));
+        }
+    }, [bookDetail])
+
     const onClose = () => {
         setBookDetail(null);
         setIsOpenDetail(false);
+        setFileList([]);
+        setPreviewImage('');
     };
     const handlePreview = async (file: UploadFile) => {
         if (!file.url && !file.preview) {
