@@ -25,3 +25,8 @@ export const deleteBookAPI = (_id:string) => {
     const urlBackend = `/api/v1/book/${_id}`;
     return axios.delete<IBackendRes<IRegister>>(urlBackend );
 }   
+
+export const getCategoryAPI = () => {
+    const urlBackend = '/api/v1/database/category';
+    return axios.get<IBackendRes<string[]>>(urlBackend);
+}

@@ -6,6 +6,7 @@ import { App, Button, Popconfirm } from "antd";
 import { useRef, useState } from "react";
 import { CSVLink } from "react-csv";
 import DetailBook from "./detail.book";
+import CreateBook from "./create.book";
 
 type TSearch = {
     author: string;
@@ -217,6 +218,11 @@ const BookTable = () => {
                 setIsOpenDetail={setIsOpenDetail}
                 bookDetail={bookDetail}
                 setBookDetail={setBookDetail}
+            />
+            <CreateBook
+                isOpenCreate={isOpenCreate}
+                setIsOpenCreate={setIsOpenCreate}
+                refreshTable={refreshTable}
             />
         </>
     );
