@@ -16,9 +16,9 @@ export const createListBooksAPI = (data: IDataImport[]) => {
     return axios.post<IBackendRes<IBulkUsersResponse>>(urlBackend, data);
 }
 
-export const updateBookAPI = (_id:string, fullName:string, phone:string) => {
-    const urlBackend = '/api/v1/book';
-    return axios.put<IBackendRes<IRegister>>(urlBackend, { _id, fullName, phone });
+export const updateBookAPI = (_id:string, data: ICreateBookRequest) => {
+    const urlBackend = `/api/v1/book/${_id}`;
+    return axios.put<IBackendRes<IRegister>>(urlBackend, data);
 }
 
 export const deleteBookAPI = (_id:string) => {

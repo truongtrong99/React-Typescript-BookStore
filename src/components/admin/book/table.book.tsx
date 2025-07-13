@@ -7,6 +7,7 @@ import { useRef, useState } from "react";
 import { CSVLink } from "react-csv";
 import DetailBook from "./detail.book";
 import CreateBook from "./create.book";
+import UpdateBook from "./update.book";
 
 type TSearch = {
     author: string;
@@ -79,8 +80,8 @@ const BookTable = () => {
                             twoToneColor="#f57800"
                             style={{ cursor: 'pointer', marginRight: 15 }}
                             onClick={() => {
-                                // setUserEditing(entity);
-                                // setIsOpenModalUpdate(true);
+                                setBookEditing(entity);
+                                setIsOpenModalUpdate(true);
                             }}
                         />
                         <Popconfirm
@@ -223,6 +224,13 @@ const BookTable = () => {
                 isOpenCreate={isOpenCreate}
                 setIsOpenCreate={setIsOpenCreate}
                 refreshTable={refreshTable}
+            />
+            <UpdateBook
+                bookEditing={bookEditing}
+                isOpenUpdate={isOpenModalUpdate}
+                setIsOpenUpdate={setIsOpenModalUpdate}
+                refreshTable={refreshTable}
+                setBookEditing={setBookEditing}
             />
         </>
     );
