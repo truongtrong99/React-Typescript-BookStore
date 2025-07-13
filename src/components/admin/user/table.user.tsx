@@ -198,14 +198,16 @@ const TableUser = () => {
                 headerTitle="Table user"
                 toolBarRender={() => [
                     <>
-                        <Button type="primary" icon={<ExportOutlined />} onClick={() => { }}>
-                            <CSVLink
-                                data={currentDataTable}
-                                filename="export-users.csv"
-                            >
+                        <CSVLink
+                            data={currentDataTable}
+                            filename="export-users.csv"
+                        >
+                            <Button type="primary" icon={<ExportOutlined />}>
                                 Export
-                            </CSVLink>
-                        </Button>
+
+                            </Button>
+                        </CSVLink>
+
                         <Button type="primary" icon={<CloudUploadOutlined />} onClick={() => setIsOpenModalImport(true)}>
                             Upload File
                         </Button>

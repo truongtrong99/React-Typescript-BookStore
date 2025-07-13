@@ -1,4 +1,4 @@
-import { getBooksAPI } from "@/services/book.api";
+import { deleteBookAPI, getBooksAPI } from "@/services/book.api";
 import { dateRangeValidate } from "@/services/helper";
 import { CloudUploadOutlined, DeleteTwoTone, EditTwoTone, ExportOutlined, PlusOutlined } from "@ant-design/icons";
 import { ActionType, ProColumns, ProTable } from "@ant-design/pro-components";
@@ -127,7 +127,12 @@ const BookTable = () => {
         // Call your delete API here
         // await deleteBookAPI(id);
         // After deletion, refresh the table
-
+        const res = await deleteBookAPI(id);
+        if (res.data) {
+            message.success('Delete book successfully');
+        } else {
+            message.error('Delete book failed');
+        }
         refreshTable();
     }
     return (
