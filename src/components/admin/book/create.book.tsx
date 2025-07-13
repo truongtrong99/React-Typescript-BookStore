@@ -1,6 +1,6 @@
 import { createBookAPI, getCategoryAPI, uploadFileAPI } from '@/services/book.api';
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
-import { App, Button, Col, Image, InputNumber, Modal, Row, Select } from 'antd';
+import { App, Col, Image, InputNumber, Modal, Row, Select } from 'antd';
 import { Form, Input } from 'antd';
 import type { FormProps, UploadProps, GetProp } from 'antd';
 import { Upload } from "antd";
@@ -66,7 +66,7 @@ const CreateBook = (props: IProps) => {
         });
 
     const onFinish: FormProps<FieldType>['onFinish'] = async (values: FieldType) => {
-        const { thumbnail, slider, mainText, author, price, quantity, category } = values;
+        const { mainText, author, price, quantity, category } = values;
         const requestData: ICreateBookRequest = {
             thumbnail: fileListThumbnail?.[0]?.name ?? '',
             slider: fileListSlider?.map((file: any) => file?.name) ?? [],
