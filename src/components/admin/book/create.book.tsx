@@ -1,4 +1,4 @@
-import { getCategoryAPI } from '@/services/book.api';
+import { getCategoryAPI, uploadFileAPI } from '@/services/book.api';
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { App, Button, Col, Image, InputNumber, Modal, Row, Select } from 'antd';
 import { Form, Input } from 'antd';
@@ -7,6 +7,8 @@ import { Upload } from "antd";
 import { UploadFile } from 'antd/lib';
 import { UploadChangeParam } from 'antd/lib/upload';
 import { useEffect, useState } from 'react';
+import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
+
 interface IProps {
     isOpenCreate: boolean;
     setIsOpenCreate: (isOpen: boolean) => void;
@@ -27,6 +29,8 @@ interface ICategory {
     value: string;
 }
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
+
+type UserUploadType = "thumbnail" | "slider";
 const CreateBook = (props: IProps) => {
     const { isOpenCreate, setIsOpenCreate, refreshTable } = props;
     const [form] = Form.useForm();
@@ -37,6 +41,8 @@ const CreateBook = (props: IProps) => {
     const [previewImage, setPreviewImage] = useState('');
     const [loadingSlider, setLoadingSlider] = useState(false);
     const [loadingThumbnail, setLoadingThumbnail] = useState(false);
+    const [fileListThumbnail, setFileListThumbnail] = useState<UploadFile[]>([]);
+    const [fileListSlider, setFileListSlider] = useState<UploadFile[]>([]);
     useEffect(() => {
         // Fetch categories from the API
         const fetchCategories = async () => {
@@ -84,8 +90,9 @@ const CreateBook = (props: IProps) => {
                 description: 'Image must be smaller than 2MB!',
             });
         }
-        return isJpgOrPng && isLt2M;
+        return isJpgOrPng && isLt2M || Upload.LIST_IGNORE; // Return false to prevent upload
     }
+
     const handlePreview = async (file: UploadFile) => {
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj as FileType);
@@ -94,7 +101,17 @@ const CreateBook = (props: IProps) => {
         setPreviewImage(file.url || (file.preview as string));
         setPreviewOpen(true);
     };
-    const handleChange = (info: UploadChangeParam, type: 'thumbnail' | 'slider') => {
+
+    const handleRemove = (file: UploadFile, type: UserUploadType) => {
+        if (type === 'thumbnail') {
+            setFileListThumbnail([]);
+        }
+        if (type === 'slider') {
+            setFileListSlider((prev) => prev.filter((item) => item.uid !== file.uid));
+        }
+    }
+
+    const handleChange = (info: UploadChangeParam, type: UserUploadType) => {
         if (info.file.status === 'uploading') {
             // Handle file change for thumbnail or slider
             type === 'thumbnail' ? setLoadingThumbnail(true) : setLoadingSlider(true);
@@ -106,18 +123,46 @@ const CreateBook = (props: IProps) => {
         }
     }
 
-    const handleUploadFile: UploadProps['customRequest'] = ({ file, onSuccess, onError }) => {
-        // Simulate an upload process
-        setTimeout(() => {
-            if (onSuccess) {
-                onSuccess(file);
+    const handleUploadFile = async (options: RcCustomRequestOptions, type: UserUploadType) => {
+        const { onSuccess } = options;
+        const file = options.file as UploadFile;
+        const res = await uploadFileAPI(file, "book");
+
+        if (res && res.data) {
+            const fileUrl = res.data.fileUploaded;
+            const uploadedFile: UploadFile = {
+                uid: file.uid,
+                name: file.name,
+                status: 'done',
+                url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${fileUrl}`,
+            };
+
+            if (type === 'thumbnail') {
+                setFileListThumbnail([{ ...uploadedFile }]);
+
+            } else if (type === 'slider') {
+                setFileListSlider((prev) => [...prev, { ...uploadedFile }]);
+
             }
-        }, 1000);
+
+
+            if (onSuccess) {
+                onSuccess("ok");
+            }
+        } else {
+            notification.error({
+                message: 'Upload failed',
+                description: 'Failed to upload the file.',
+            });
+        }
+
     };
 
     const handleOnCancel = () => {
         form.resetFields();
         setIsOpenCreate(false);
+        setFileListThumbnail([]);
+        setFileListSlider([]);
 
     }
     return (
@@ -206,10 +251,13 @@ const CreateBook = (props: IProps) => {
                                     multiple={false}
                                     maxCount={1}
                                     accept=".jpg,.jpeg,.png"
-                                    customRequest={handleUploadFile}
+                                    customRequest={(options) => handleUploadFile(options, 'thumbnail')}
                                     beforeUpload={beforeUpload}
                                     onPreview={handlePreview}
-                                    onChange={(info) => handleChange(info, 'thumbnail')}>
+                                    onChange={(info) => handleChange(info, 'thumbnail')}
+                                    onRemove={(file) => handleRemove(file, 'thumbnail')}
+                                    fileList={fileListThumbnail}
+                                >
                                     <div>
                                         {loadingThumbnail ? <UploadOutlined /> : <PlusOutlined />}
                                         <div style={{ marginTop: 8 }}>Upload</div>
@@ -229,10 +277,12 @@ const CreateBook = (props: IProps) => {
                                     listType="picture-card"
                                     multiple
                                     accept=".jpg,.jpeg,.png"
-                                    customRequest={handleUploadFile}
+                                    customRequest={(options) => handleUploadFile(options, 'slider')}
                                     beforeUpload={beforeUpload}
                                     onPreview={handlePreview}
                                     onChange={(info) => handleChange(info, 'slider')}
+                                    onRemove={(file) => handleRemove(file, 'slider')}
+                                    fileList={fileListSlider}
                                 >
                                     <div>
                                         {loadingSlider ? <UploadOutlined /> : <PlusOutlined />}
