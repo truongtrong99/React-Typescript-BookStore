@@ -88,4 +88,14 @@ interface IBackendRes<T> {
         createdAt: Date;
         updatedAt: Date;
     }
+
+    interface ICreateBookRequest {
+        thumbnail: string;
+        slider: string[];
+        mainText: string;
+        author: string;
+        price: number;
+        quantity: number;
+        category: string;
+    }
 }

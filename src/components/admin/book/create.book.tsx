@@ -1,4 +1,4 @@
-import { getCategoryAPI, uploadFileAPI } from '@/services/book.api';
+import { createBookAPI, getCategoryAPI, uploadFileAPI } from '@/services/book.api';
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { App, Button, Col, Image, InputNumber, Modal, Row, Select } from 'antd';
 import { Form, Input } from 'antd';
@@ -64,9 +64,38 @@ const CreateBook = (props: IProps) => {
             reader.onload = () => resolve(reader.result as string);
             reader.onerror = (error) => reject(error);
         });
+
     const onFinish: FormProps<FieldType>['onFinish'] = async (values: FieldType) => {
-        console.log('Creating book with values:', values);
+        const { thumbnail, slider, mainText, author, price, quantity, category } = values;
+        const requestData: ICreateBookRequest = {
+            thumbnail: fileListThumbnail?.[0]?.name ?? '',
+            slider: fileListSlider?.map((file: any) => file?.name) ?? [],
+            mainText: mainText!,
+            author: author!,
+            price: price!,
+            quantity: quantity!,
+            category: category!
+        };
+        const res = await createBookAPI(requestData);
+
+        if (res && res.data) {
+            notification.success({
+                message: 'Success',
+                description: 'Book created successfully!',
+            });
+            setIsOpenCreate(false);
+            form.resetFields();
+            setFileListThumbnail([]);
+            setFileListSlider([]);
+            refreshTable();
+        } else {
+            notification.error({
+                message: 'Error',
+                description: 'Failed to create book.',
+            });
+        }
     };
+
     const normFile = (e: any) => {
         console.log('Upload event:', e);
         if (Array.isArray(e)) {

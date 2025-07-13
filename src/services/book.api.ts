@@ -6,7 +6,7 @@ export const getBooksAPI = (query:string) => {
 }
 
 
-export const createBookAPI = (data: IRegisterRequest) => {
+export const createBookAPI = (data: ICreateBookRequest) => {
     const urlBackend = '/api/v1/book';
     return axios.post<IBackendRes<IRegister>>(urlBackend, data);
 }
