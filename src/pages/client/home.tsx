@@ -2,11 +2,20 @@ import { getBooksAPI, getCategoryAPI } from "@/services/book.api";
 import { FilterTwoTone, ReloadOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Col, Divider, Form, InputNumber, Pagination, Rate, Row, Card, Spin } from "antd";
 import { Tabs } from "antd";
-import type { TabsProps } from 'antd';
+import type { FormProps, TabsProps } from 'antd';
 import { useEffect, useState } from "react";
+import type { CheckboxOptionType, GetProp } from 'antd';
+
 interface ICategory {
     label: string;
     value: string;
+}
+interface FieldType {
+    range?: {
+        from?: number;
+        to?: number;
+    };
+    category?: string[];
 }
 const HomePage = () => {
     const [categories, setCategories] = useState<ICategory[]>([]);
@@ -15,22 +24,22 @@ const HomePage = () => {
 
     const items: TabsProps['items'] = [
         {
-            key: '1',
+            key: 'sort=-sold',
             label: 'Phổ biến',
             children: <></>,
         },
         {
-            key: '2',
+            key: 'sort=-updatedAt',
             label: 'Hàng Mới',
             children: <></>,
         },
         {
-            key: '3',
+            key: 'sort=price',
             label: 'Giá Thấp Đến Cao',
             children: <></>,
         },
         {
-            key: '4',
+            key: 'sort=-price',
             label: 'Giá Cao Đến Thấp',
             children: <></>,
         },
@@ -44,7 +53,7 @@ const HomePage = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [filter, setFilter] = useState<string>("");
     const [sortQuery, setSortQuery] = useState<string>("sort=-sold");
-
+    const [form] = Form.useForm();
     useEffect(() => {
         // Fetch categories from the API
         const fetchCategories = async () => {
@@ -59,19 +68,19 @@ const HomePage = () => {
         };
         fetchCategories();
     }, []);
-    useEffect(() => {
 
+    useEffect(() => {
         fetchBooks();
     }, [meta.current, meta.pageSize, filter, sortQuery]);
 
     const fetchBooks = async () => {
         setIsLoading(true);
         let query = `current=${meta.current}&pageSize=${meta.pageSize}`;
-        if (filter) {
-            query += `&filter=${filter}`;
-        }
         if (sortQuery) {
             query += `&${sortQuery}`;
+        }
+        if (filter) {
+            query += `${filter}`;
         }
         const res = await getBooksAPI(query);
         if (res.data) {
@@ -85,6 +94,7 @@ const HomePage = () => {
         }
         setIsLoading(false);
     };
+
     const handleOnChangePage = (pagination: { current: number; pageSize: number; }) => {
         if (pagination && pagination.current !== meta.current) {
             setMeta({
@@ -99,6 +109,44 @@ const HomePage = () => {
             });
         }
     }
+
+    const handleOnKeyChange = (key: string) => {
+        setSortQuery(`${key}`);
+    }
+
+    const handleOnClickCategory: GetProp<typeof Checkbox.Group, 'onChange'> = (checkedValues) => {
+        let query = "";
+        if (Array.isArray(checkedValues) && checkedValues.length > 0) {
+            query += `&category=${checkedValues.join(",")}`;
+        }
+        setFilter(query);
+    };
+
+    const onFinish: FormProps<FieldType>['onFinish'] = async (values: FieldType) => {
+        const range = values.range || {};
+        const { from, to } = range;
+        let query = "";
+        if (from !== undefined && to !== undefined) {
+            query += `&price>=${from}&price<=${to}`;
+        }
+        if (values.category && values.category.length > 0) {
+            query += `&category=${values.category.join(",")}`;
+        }
+        setFilter(query);
+    };
+
+    const handleOnReset = () => {
+        form.resetFields()
+        setFilter("");
+        setSortQuery("sort=-sold");
+        setMeta({
+            current: 1,
+            pageSize: 5,
+            pages: 0,
+            total: 0,
+        });
+    }
+
     return (
         <>
             <div style={{ padding: "24px", background: "#f0f2f5", minHeight: "100vh" }}>
@@ -119,15 +167,17 @@ const HomePage = () => {
                     >
                         <div style={{ justifyContent: "space-between", display: "flex", alignItems: "center", marginBottom: 16 }}>
                             <span style={{ fontWeight: 600, fontSize: 18 }}><FilterTwoTone /> Bộ lọc tìm kiếm</span>
-                            <ReloadOutlined style={{ fontSize: "20px", color: "#1890ff", cursor: "pointer" }} />
+                            <ReloadOutlined style={{ fontSize: "20px", color: "#1890ff", cursor: "pointer" }} onClick={() => handleOnReset()} />
                         </div>
-                        <Form>
+                        <Form form={form} onFinish={onFinish}>
                             <Form.Item label="Danh mục sản phẩm" name="category" labelCol={{ span: 24 }}>
-                                <Checkbox.Group>
+                                <Checkbox.Group onChange={handleOnClickCategory}>
                                     <Row>
                                         {categories.map((category, index) => (
                                             <Col span={24} key={index} style={{ marginBottom: 8 }}>
-                                                <Checkbox value={category.value}>{category.label}</Checkbox>
+                                                <Checkbox value={category.value}>
+                                                    {category.label}
+                                                </Checkbox>
                                             </Col>
                                         ))}
                                     </Row>
@@ -153,7 +203,11 @@ const HomePage = () => {
                                     </Form.Item>
                                 </div>
                                 <div>
-                                    <Button type="primary" style={{ width: "100%" }}>
+                                    <Button type="primary" style={{ width: "100%" }}
+                                        onClick={() => {
+                                            form.submit();
+                                        }}
+                                    >
                                         Áp dụng
                                     </Button>
                                 </div>
@@ -180,9 +234,9 @@ const HomePage = () => {
                             padding: 24,
                         }}
                     >
-                        <Spin spinning={isLoading} tip="Loading...">
+                        <Spin spinning={isLoading} tip="Loading..." >
                             <Row>
-                                <Tabs defaultActiveKey="1" items={items}>
+                                <Tabs defaultActiveKey="sort=-sold" items={items} onChange={(key) => { handleOnKeyChange(key) }}>
                                 </Tabs>
                             </Row>
                             <Row>
