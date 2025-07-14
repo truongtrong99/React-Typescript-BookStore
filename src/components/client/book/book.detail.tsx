@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Row, Col, Image, Button, Rate, InputNumber, Typography, Divider, Spin, message, Card } from "antd";
+import { Row, Col, Button, Rate, InputNumber, Typography, Divider, message, Card } from "antd";
 import { ShoppingCartOutlined, HeartOutlined, ShareAltOutlined } from "@ant-design/icons";
 import { getBookByIdAPI } from "services/book.api";
 import "./book.detail.scss";
 import ImageGallery from "react-image-gallery";
 import ModalGallery from "./modal.gallery";
+import BookLoader from "./book.loader";
 const { Title, Text, Paragraph } = Typography;
 
 const BookDetail = () => {
@@ -61,13 +62,6 @@ const BookDetail = () => {
         return new Intl.NumberFormat('vi-VN').format(price) + ' đ';
     };
 
-    if (loading) {
-        return (
-            <div className="book-loading">
-                <Spin size="large" />
-            </div>
-        );
-    }
 
     if (!book) {
         return (
@@ -81,55 +75,9 @@ const BookDetail = () => {
         setIsOpenModalGallery(true);
         setSelectedImage(refGallery?.current?.getCurrentIndex() ?? 0);
     };
-
-    // const images = [
-    //     {
-    //         original: "https://picsum.photos/id/1018/1000/600/",
-    //         thumbnail: "https://picsum.photos/id/1018/250/150/",
-    //     },
-    //     {
-    //         original: "https://picsum.photos/id/1015/1000/600/",
-    //         thumbnail: "https://picsum.photos/id/1015/250/150/",
-    //     },
-    //     {
-    //         original: "https://picsum.photos/id/1019/1000/600/",
-    //         thumbnail: "https://picsum.photos/id/1019/250/150/",
-    //     },
-    //     {
-    //         original: "https://picsum.photos/id/1018/1000/600/",
-    //         thumbnail: "https://picsum.photos/id/1018/250/150/",
-    //     },
-    //     {
-    //         original: "https://picsum.photos/id/1015/1000/600/",
-    //         thumbnail: "https://picsum.photos/id/1015/250/150/",
-    //     },
-    //     {
-    //         original: "https://picsum.photos/id/1019/1000/600/",
-    //         thumbnail: "https://picsum.photos/id/1019/250/150/",
-    //     }, {
-    //         original: "https://picsum.photos/id/1018/1000/600/",
-    //         thumbnail: "https://picsum.photos/id/1018/250/150/",
-    //     },
-    //     {
-    //         original: "https://picsum.photos/id/1015/1000/600/",
-    //         thumbnail: "https://picsum.photos/id/1015/250/150/",
-    //     },
-    //     {
-    //         original: "https://picsum.photos/id/1019/1000/600/",
-    //         thumbnail: "https://picsum.photos/id/1019/250/150/",
-    //     }, {
-    //         original: "https://picsum.photos/id/1018/1000/600/",
-    //         thumbnail: "https://picsum.photos/id/1018/250/150/",
-    //     },
-    //     {
-    //         original: "https://picsum.photos/id/1015/1000/600/",
-    //         thumbnail: "https://picsum.photos/id/1015/250/150/",
-    //     },
-    //     {
-    //         original: "https://picsum.photos/id/1019/1000/600/",
-    //         thumbnail: "https://picsum.photos/id/1019/250/150/",
-    //     },
-    // ];
+    if (loading) {
+        return <BookLoader />;
+    }
     return (
         <div className="book-page">
             <div className="container">
