@@ -6,6 +6,7 @@ import type { FormProps, TabsProps } from 'antd';
 import { useEffect, useState } from "react";
 import type { GetProp } from 'antd';
 import { useNavigate } from "react-router";
+import MobileFilter from "@/components/client/book/mobile.filter";
 interface ICategory {
     label: string;
     value: string;
@@ -55,6 +56,7 @@ const HomePage = () => {
     const [sortQuery, setSortQuery] = useState<string>("sort=-sold");
     const [form] = Form.useForm();
     const navigate = useNavigate();
+    const [isShowMobileFilter, setIsShowMobileFilter] = useState<boolean>(false);
     useEffect(() => {
         // Fetch categories from the API
         const fetchCategories = async () => {
@@ -237,8 +239,18 @@ const HomePage = () => {
                     >
                         <Spin spinning={isLoading} tip="Loading..." >
                             <Row>
-                                <Tabs defaultActiveKey="sort=-sold" items={items} onChange={(key) => { handleOnKeyChange(key) }}>
+                                <Tabs
+                                    style={{ overflowX: "auto" }} defaultActiveKey="sort=-sold" items={items} onChange={(key) => { handleOnKeyChange(key) }}>
                                 </Tabs>
+                                <Col
+                                    xs={24} md={0}
+                                >
+                                    <div style={{ marginBottom: 20 }}>
+                                        <span onClick={() => setIsShowMobileFilter(!isShowMobileFilter)}>
+                                            <span style={{ fontWeight: 600, fontSize: 18 }}><FilterTwoTone /> Bộ lọc tìm kiếm</span>
+                                        </span>
+                                    </div>
+                                </Col>
                             </Row>
                             <Row>
                                 {books.map((book) => (
@@ -336,6 +348,13 @@ const HomePage = () => {
 
                 </Row>
             </div>
+            <MobileFilter
+                isOpen={isShowMobileFilter}
+                setIsOpen={setIsShowMobileFilter}
+                handleChangeFilter={handleOnClickCategory}
+                categories={categories}
+                onFinish={onFinish}
+            />
         </>
     );
 }
