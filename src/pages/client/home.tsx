@@ -1,11 +1,11 @@
 import { getBooksAPI, getCategoryAPI } from "@/services/book.api";
 import { FilterTwoTone, ReloadOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Col, Divider, Form, InputNumber, Pagination, Rate, Row, Card, Spin } from "antd";
+import { Button, Checkbox, Col, Divider, Form, InputNumber, Pagination, Rate, Row, Spin } from "antd";
 import { Tabs } from "antd";
 import type { FormProps, TabsProps } from 'antd';
 import { useEffect, useState } from "react";
-import type { CheckboxOptionType, GetProp } from 'antd';
-
+import type { GetProp } from 'antd';
+import { useNavigate } from "react-router";
 interface ICategory {
     label: string;
     value: string;
@@ -54,6 +54,7 @@ const HomePage = () => {
     const [filter, setFilter] = useState<string>("");
     const [sortQuery, setSortQuery] = useState<string>("sort=-sold");
     const [form] = Form.useForm();
+    const navigate = useNavigate();
     useEffect(() => {
         // Fetch categories from the API
         const fetchCategories = async () => {
@@ -262,6 +263,9 @@ const HomePage = () => {
                                             onMouseLeave={(e) => {
                                                 e.currentTarget.style.transform = "translateY(0)";
                                                 e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.05)";
+                                            }}
+                                            onClick={() => {
+                                                navigate(`/book/${book._id}`);
                                             }}
                                         >
                                             <img

@@ -20,6 +20,7 @@ import ManageOrderPage from 'pages/admin/manage.order';
 import ManageUserPage from 'pages/admin/manage.user';
 import LayoutAdmin from 'components/layout/layout.admin';
 import enUS from 'antd/locale/en_US';
+import "react-image-gallery/styles/css/image-gallery.css";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -30,7 +31,7 @@ const router = createBrowserRouter([
         element: <HomePage />
       },
       {
-        path: "/book",
+        path: "/book/:id",
         element: <BookPage />,
       },
       {

@@ -5,6 +5,10 @@ export const getBooksAPI = (query:string) => {
     return axios.get<IBackendRes<IModelPaginate<IBookTable>>>(urlBackend);
 }
 
+export const getBookByIdAPI = (id: string) => {
+    const urlBackend = `/api/v1/book/${id}`;
+    return axios.get<IBackendRes<IBookTable>>(urlBackend);
+}
 
 export const createBookAPI = (data: ICreateBookRequest) => {
     const urlBackend = '/api/v1/book';
