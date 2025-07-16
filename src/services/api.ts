@@ -54,3 +54,8 @@ export const createOrderAPI = (data: IOrderRequest) => {
     const urlBackend = '/api/v1/order';
     return axios.post<IBackendRes<IOrder>>(urlBackend, data);
 }
+
+export const getHistoryAPI = () => {
+    const urlBackend = '/api/v1/history';
+    return axios.get<IBackendRes<IOrderHistoryTable[]>>(urlBackend);
+}

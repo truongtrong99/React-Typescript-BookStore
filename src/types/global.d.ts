@@ -133,4 +133,22 @@ interface IBackendRes<T> {
         createdAt: Date;
         updatedAt: Date;
     }
+    interface IOrderHistoryTable {
+        _id: string;
+        name: string;
+        type: string;
+        email: string;
+        phone: string;
+        userId: string;
+        detail: {
+            bookName: string;
+            quantity: number;
+            _id: string;
+        }[];
+        totalPrice: number;
+        paymentStatus: string;
+        paymentRef: string;
+        createdAt: Date;
+        updatedAt: Date;
+    }
 }

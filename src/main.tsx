@@ -22,6 +22,7 @@ import LayoutAdmin from 'components/layout/layout.admin';
 import enUS from 'antd/locale/en_US';
 import "react-image-gallery/styles/css/image-gallery.css";
 import OrderPage from './pages/client/order';
+import History from './pages/client/history';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -50,6 +51,10 @@ const router = createBrowserRouter([
       {
         path: "/order",
         element: <ProtectedRoute><OrderPage /></ProtectedRoute>
+      },
+      {
+        path: "/history",
+        element: <ProtectedRoute><History /></ProtectedRoute>
       }
     ]
   },

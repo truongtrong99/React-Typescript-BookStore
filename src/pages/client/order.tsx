@@ -2,6 +2,7 @@ import OrderDetail from "@/components/client/order/order.detail";
 import Payment from "@/components/client/order/payment";
 import { Button, Result, Steps } from "antd";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 
 const OrderPage = () => {
@@ -41,7 +42,9 @@ const OrderPage = () => {
                                 <Button type="primary" key="console">
                                     Trang chủ
                                 </Button>,
-                                <Button key="buy">Lịch sử mua hàng</Button>,
+                                <Button key="history">
+                                    <Link to="/history" type="primary">Lịch sử mua hàng</Link>
+                                </Button>
                             ]}
                         />
                     )
