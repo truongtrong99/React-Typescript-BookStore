@@ -7,6 +7,7 @@ import "./book.detail.scss";
 import ImageGallery from "react-image-gallery";
 import ModalGallery from "./modal.gallery";
 import BookLoader from "./book.loader";
+import { useCurrentApp } from "@/components/context/app.context";
 const { Title, Text, Paragraph } = Typography;
 
 const BookDetail = () => {
@@ -18,6 +19,8 @@ const BookDetail = () => {
     const [isOpenModalGallery, setIsOpenModalGallery] = useState(false);
     const refGallery = useRef<ImageGallery>(null);
     const [allImages, setAllImages] = useState<any[]>([]);
+    const { carts, setCarts } = useCurrentApp();
+
     useEffect(() => {
         fetchBookDetail();
     }, [params.id]);
@@ -53,10 +56,34 @@ const BookDetail = () => {
     };
 
     const handleAddToCart = () => {
-        if (book) {
-            message.success(`Đã thêm ${quantity} cuốn "${book.mainText}" vào giỏ hàng`);
+        const cartStorage = localStorage.getItem('carts');
+        if (cartStorage && book) {
+            const carts: ICart[] = JSON.parse(cartStorage);
+            const existingCart = carts.find(item => item._id === book._id);
+            if (existingCart) {
+                existingCart.quantity += quantity;
+            } else {
+                carts.push({
+                    _id: book._id,
+                    quantity,
+                    detail: book
+                });
+            }
+            localStorage.setItem('carts', JSON.stringify(carts));
+            setCarts(carts);
+        }
+        else {
+            const newCart: ICart[] = [{
+                _id: book?._id || '',
+                quantity,
+                detail: book!
+            }]
+            localStorage.setItem('carts', JSON.stringify(newCart));
+            setCarts(newCart);
         }
     };
+
+    console.log('carts', carts);
 
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat('vi-VN').format(price) + ' đ';
