@@ -81,6 +81,7 @@ const BookDetail = () => {
             localStorage.setItem('carts', JSON.stringify(newCart));
             setCarts(newCart);
         }
+        message.success('Đã thêm vào giỏ hàng');
     };
 
     console.log('carts', carts);
