@@ -2,12 +2,18 @@ import { useCurrentApp } from "@/components/context/app.context";
 import { Form, Radio, Input, Button, FormProps, App, Empty } from "antd";
 import { DeleteTwoTone } from "@ant-design/icons";
 import { useEffect, useState } from "react";
+import { createOrderAPI } from "@/services/api";
 
 interface IProps {
     currentStep: number;
     setCurrentStep: (step: number) => void;
 }
-
+interface FieldType {
+    fullName: string;
+    phone: string;
+    address: string;
+    method: string;
+}
 const currency = (value: number) => value.toLocaleString('vi-VN') + ' đ';
 const Payment = (props: IProps) => {
     const { currentStep, setCurrentStep } = props;
@@ -15,6 +21,7 @@ const Payment = (props: IProps) => {
     const [totalPrice, setTotalPrice] = useState(0);
     const [form] = Form.useForm();
     const { message } = App.useApp();
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const handleDelete = (bookId: string) => {
         const cartsFiltered = carts.filter((book) => book._id !== bookId);
         setCarts(cartsFiltered);
@@ -43,12 +50,34 @@ const Payment = (props: IProps) => {
         }
     }, [carts]);
 
-    const onFinish: FormProps['onFinish'] = (values) => {
+    const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
         if (carts.length === 0) {
             message.error('Không có sản phẩm nào trong giỏ hàng');
             return;
         }
-        console.log('Form values:', values);
+        setIsSubmitting(true);
+        const requestData: IOrderRequest = {
+            name: values.fullName,
+            address: values.address,
+            phone: values.phone,
+            totalPrice: totalPrice,
+            type: values.method,
+            detail: carts.map((book) => ({
+                bookName: book.detail.mainText,
+                quantity: book.quantity,
+                _id: book._id
+            })),
+        }
+        const res = await createOrderAPI(requestData);
+        if (res.data) {
+            message.success('Đặt hàng thành công');
+            setCarts([]);
+            localStorage.removeItem('carts');
+            setCurrentStep(2);
+        } else if (res.error) {
+            message.error('Đặt hàng thất bại, vui lòng thử lại sau');
+        }
+        setIsSubmitting(false);
     };
 
     return (
@@ -103,7 +132,8 @@ const Payment = (props: IProps) => {
                     </div>
                     <Form.Item style={{ marginTop: 16 }}>
                         <Button type="primary" style={{ background: '#e74c3c', border: 'none', fontSize: 18, fontWeight: 500, width: '100%', height: 48 }}
-                            onClick={() => form.submit()}>
+                            onClick={() => form.submit()}
+                            loading={isSubmitting}>
                             Đặt Hàng ({carts.length})
                         </Button>
                     </Form.Item>

@@ -104,4 +104,33 @@ interface IBackendRes<T> {
         quantity: number;
         detail: IBookTable;
     }
+
+    interface IOrderRequest {
+        name: string;
+        address: string;
+        phone: string;
+        totalPrice: number;
+        type: string;
+        detail: {
+            bookName: string;
+            quantity: number;
+            _id: string;
+        }[];
+    }
+
+    interface IOrder {
+        _id: string;
+        name: string;
+        address: string;
+        phone: string;
+        totalPrice: number;
+        type: string;
+        detail: {
+            bookName: string;
+            quantity: number;
+            _id: string;
+        }[];
+        createdAt: Date;
+        updatedAt: Date;
+    }
 }

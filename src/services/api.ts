@@ -49,3 +49,8 @@ export const deleteUserAPI = (_id:string) => {
     const urlBackend = `/api/v1/user/${_id}`;
     return axios.delete<IBackendRes<IRegister>>(urlBackend );
 }
+
+export const createOrderAPI = (data: IOrderRequest) => {
+    const urlBackend = '/api/v1/order';
+    return axios.post<IBackendRes<IOrder>>(urlBackend, data);
+}
