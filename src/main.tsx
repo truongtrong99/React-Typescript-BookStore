@@ -21,6 +21,7 @@ import ManageUserPage from 'pages/admin/manage.user';
 import LayoutAdmin from 'components/layout/layout.admin';
 import enUS from 'antd/locale/en_US';
 import "react-image-gallery/styles/css/image-gallery.css";
+import OrderPage from './pages/client/order';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
             <div>checkout page</div>
           </ProtectedRoute>
         ),
+      },
+      {
+        path: "/order",
+        element: <OrderPage />
       }
     ]
   },
