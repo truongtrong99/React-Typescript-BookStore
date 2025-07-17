@@ -69,3 +69,13 @@ export const updateUserPasswordAPI = (email:string, oldpass:string, newpass:stri
     const urlBackend = '/api/v1/user/change-password';
     return axios.post<IBackendRes<IRegister>>(urlBackend, { email, oldpass, newpass });
 }
+export const getListOrdersAPI = (query:string) => {
+    const urlBackend = `/api/v1/order?${query}`;
+    return axios.get<IBackendRes<IModelPaginate<IOrderTable>>>(urlBackend);
+}
+
+export const getDashboardDataAPI = () => {
+    const urlBackend = `/api/v1/database/dashboard`;
+    return axios.get<IBackendRes<IDashboardData>>(urlBackend);
+}
+
