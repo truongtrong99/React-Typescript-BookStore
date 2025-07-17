@@ -5,7 +5,7 @@ import { Tabs } from "antd";
 import type { FormProps, TabsProps } from 'antd';
 import { useEffect, useState } from "react";
 import type { GetProp } from 'antd';
-import { useNavigate } from "react-router";
+import { useNavigate, useOutletContext } from "react-router";
 import MobileFilter from "@/components/client/book/mobile.filter";
 interface ICategory {
     label: string;
@@ -19,6 +19,7 @@ interface FieldType {
     category?: string[];
 }
 const HomePage = () => {
+    const { searchTerm } = useOutletContext() as any;
     const [categories, setCategories] = useState<ICategory[]>([]);
 
     const [books, setBooks] = useState<IBookTable[]>([]);
@@ -74,7 +75,7 @@ const HomePage = () => {
 
     useEffect(() => {
         fetchBooks();
-    }, [meta.current, meta.pageSize, filter, sortQuery]);
+    }, [meta.current, meta.pageSize, filter, sortQuery, searchTerm]);
 
     const fetchBooks = async () => {
         setIsLoading(true);
@@ -84,6 +85,9 @@ const HomePage = () => {
         }
         if (filter) {
             query += `${filter}`;
+        }
+        if (searchTerm) {
+            query += `&mainText=${searchTerm}`;
         }
         const res = await getBooksAPI(query);
         if (res.data) {

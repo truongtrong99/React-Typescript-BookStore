@@ -55,7 +55,7 @@ const BookDetail = () => {
         }
     };
 
-    const handleAddToCart = () => {
+    const handleAddToCart = (isBuyNow: boolean) => {
         const cartStorage = localStorage.getItem('carts');
         if (cartStorage && book) {
             const carts: ICart[] = JSON.parse(cartStorage);
@@ -161,7 +161,7 @@ const BookDetail = () => {
                                     <Button
                                         icon={<ShoppingCartOutlined />}
                                         className="add-to-cart-btn"
-                                        onClick={handleAddToCart}
+                                        onClick={() => handleAddToCart(false)}
                                     >
                                         Thêm vào giỏ hàng
                                     </Button>
@@ -169,6 +169,7 @@ const BookDetail = () => {
                                         type="primary"
                                         size="large"
                                         className="buy-now-btn"
+                                        onClick={() => handleAddToCart(true)}
                                     >
                                         Mua ngay
                                     </Button>
